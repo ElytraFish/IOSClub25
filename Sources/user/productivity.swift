@@ -1,6 +1,6 @@
 import SwiftUI
 
-// main app view with tab navigation
+// Main app view with tab navigation
 struct ContentView: View {
     var body: some View {
         TabView {
@@ -48,7 +48,7 @@ struct HabitsView: View {
     }
 }
 
-// Ria!
+// Ria S!
 struct DashboardView: View {
     var body: some View {
         NavigationView {
@@ -78,7 +78,7 @@ struct CalendarView: View {
     }
 }
 
-// Ria!
+// Ria S!
 struct ProfileView: View {
     var body: some View {
         NavigationView {

@@ -222,10 +222,10 @@ struct CalendarView: View {
     }
 }
 
-// Ria S!
+// Profile Tab
 struct ProfileView: View {
-    private var user = UserProfile(
-        name: "Random User",
+    @State private var user = UserProfile(
+        name: "Random Subject",
         email: "random.user@gmail.com",
         phoneNumber: "+1 123 456 7890",
         joinDate: "November 2025"
@@ -233,15 +233,33 @@ struct ProfileView: View {
     
     @State private var notificationsEnabled = false
     @State private var showEditProfile = false
+    
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Profile")
-                    .font(.largeTitle)
-                    .padding()
-                Spacer()
+            ScrollView{
+                VStack {
+                    Text("Profile")
+                        .font(.largeTitle)
+                        .padding()
+                    Spacer()
+                }
+                VStack(spacing: 15) {
+                    ZStack{
+                        Circle()
+                            .fill(LinearGradient (
+                                gradient: Gradient(colors: [.yellow, .pink]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 100, height: 100)
+                        
+                        Text(user.initials)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                }
             }
-            .navigationTitle("Profile")
         }
     }
 }
@@ -251,4 +269,11 @@ struct UserProfile {
     var email: String
     var phoneNumber: String
     let joinDate: String
+    
+    var initials: String {
+        let components = name.components(separatedBy: " ")
+        let firstInitial = components.first?.first?.uppercased() ?? ""
+        let lastInitial = components.count > 1 ? components.last?.first?.uppercased() ?? "" : ""
+        return firstInitial + lastInitial
+    }
 }

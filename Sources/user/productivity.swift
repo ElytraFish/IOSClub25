@@ -2,27 +2,32 @@ import SwiftUI
 
 // Main app view with tab navigation
 struct ContentView: View {
+    @State private var selectedTab = 1 // starting UI on Dashboard
     var body: some View {
-        TabView {
+        TabView (selection: $selectedTab){
             HabitsView()
+                .tag(0)
                 .tabItem {
                     Image(systemName: "checkmark.circle")
                     Text("Habits")
                 }
             
-            DashboardView()
+            DashboardView(selectedTab: $selectedTab)
+                .tag(1)
                 .tabItem {
                     Image(systemName: "speedometer")
                     Text("Dashboard")
                 }
             
-            CalendarView()
+            CalendarView(selectedTab: $selectedTab)
+                .tag(2)
                 .tabItem {
                     Image(systemName: "calendar")
                     Text("Calendar")
                 }
             
             ProfileView()
+                .tag(3)
                 .tabItem {
                     Image(systemName: "person.crop.circle")
                     Text("Profile")
@@ -63,10 +68,15 @@ struct Day: Identifiable {
 }
 
 struct DashboardView: View {
-    
+    @Binding var selectedTab: Int
     // Daily messages that keep alternating
+    
+    init(selectedTab: Binding<Int>) {
+            self._selectedTab = selectedTab
+        }
+    
     let messages = [
-        "Hello! Ready to tackle the day? ☀️💪", "You're doing great, keep going! 🌟🔥", "So proud of you, keep it up 😊👏", "Even small progress counts. 🌱✨", "One step at a time — you’ve got this! 🧗‍♀️💛", "A little progress every day adds up. 📈✨", "You're amazing, keep shining! 🌈💖", "Show up for yourself today 🤍💪", "Do it for the future you 💫🫶", "Small habits, big results! 🌱➡️🌳", "Discipline > motivation. You’re doing amazing! ⚡️💪"
+        "Hello! Ready to tackle the day? ☀️💪", "You're doing great, keep going! 🌟🔥", "So proud of you, keep it up 😊👏", "Even small progress counts. 🌱", "One step at a time, you’ve got this! 🧗‍♀️", "A little progress every day adds up. 📈✨", "You're amazing, keep shining! 🌈💖", "Show up for yourself today 🤍", "Do it for the future you. 💫🫶", "Small habits, big results! 🌱➡️🌳", "Discipline > motivation. ⚡️💪"
     ]
     // Mock Data for now until Habits/Calendar tabs are created (uses structs above)
     
@@ -99,13 +109,13 @@ struct DashboardView: View {
             ScrollView {
                 VStack {
                     Text(messages.randomElement()!)
-                        .font(.headline)
+                        .font(.title3)
                         .italic()
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
                     VStack{
-                        Text("TODAY:")
-                            .fixedSize()
+                        Text("TODAY")
+                            .font(.title2)
                             .bold()
                         Spacer()
                         HStack{
@@ -121,15 +131,13 @@ struct DashboardView: View {
                         }
                     }
                     .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.mint.opacity(0.2))
-                            .frame(width: 300, height: 110)
-                    )
+                    .background(Color.yellow.opacity(0.3))
+                    .cornerRadius(12)
+                    .shadow(color: .gray.opacity(0.4), radius: 12, x:0, y:2)
                     // Weekly Overview (Bar Graph with struct as placeholder)
                     Spacer()
                         .frame(height: 10)
-                    Text("Weekly Overview").font(.headline)
+                    Text("Weekly Overview").font(.title2).fontWeight(.bold)
                     VStack{
                         // Y-Axis
                         HStack(alignment: .bottom, spacing: 0){
@@ -152,7 +160,7 @@ struct DashboardView: View {
                                                 .frame(height: 15)
                                             // Bar
                                             Rectangle()
-                                                .fill(Color.blue)
+                                                .fill(Color.orange.opacity(0.6))
                                                 .frame(
                                                     width: 20,
                                                     height: CGFloat(day.taskDone) / CGFloat(5) * 140 )
@@ -177,7 +185,9 @@ struct DashboardView: View {
                         let total = weekData.reduce(0) {$0 + $1.taskDone}
                         return Double(total) / Double(weekData.count)
                     }
-                    Text("Try setting a goal for \(Int(averageTasks)) tasks per day.")
+                    Text("Based on your history,")
+                        .italic()
+                    Text("try setting a goal for \(Int(averageTasks)) tasks per day.")
                         .italic()
                     
                     Divider()
@@ -193,11 +203,19 @@ struct DashboardView: View {
                                 .cornerRadius(8)
                         }
                     }
+                    Spacer()
                     HStack {
-                        Button("Add New Habit") { print("Add tapped") }
-                            .buttonStyle(.borderedProminent)
-                        Button("View Full Calendar") { print("Calendar tapped") }
-                            .buttonStyle(.bordered)
+                        Button("Add New Habit") {
+                            print("Add tapped")
+                            selectedTab = 0
+                        }
+                        .buttonStyle(.borderedProminent)
+                        Button("View Full Calendar") {
+                            print("Calendar tapped")
+                            selectedTab = 2
+                        }
+                        .buttonStyle(.bordered)
+                        
                     }
                 }
                 .navigationTitle("Dashboard")
@@ -209,6 +227,7 @@ struct DashboardView: View {
 
 // Nancy!
 struct CalendarView: View {
+    @Binding var selectedTab: Int
     var body: some View {
         NavigationView {
             VStack {

@@ -48,7 +48,7 @@ struct HabitsView: View {
     }
 }
 
-// Ria S!
+// Dashboard - Ria Sh
 
 // Temporary struct till Habits tab is created
 struct Habit{
@@ -130,46 +130,46 @@ struct DashboardView: View {
                     Spacer()
                         .frame(height: 10)
                     Text("Weekly Overview").font(.headline)
-                        VStack{
-                            // Y-Axis
-                            HStack(alignment: .bottom, spacing: 0){
-                                VStack{
-                                    ForEach((0...5).reversed(), id: \.self) { label in
-                                        Spacer()
-                                        Text("\(label)")
-                                            .font(.caption2)
-                                            .frame(height: 20)
-                                    }
+                    VStack{
+                        // Y-Axis
+                        HStack(alignment: .bottom, spacing: 0){
+                            VStack{
+                                ForEach((0...5).reversed(), id: \.self) { label in
+                                    Spacer()
+                                    Text("\(label)")
+                                        .font(.caption2)
+                                        .frame(height: 20)
                                 }
-                                .frame(width: 20)
-                                
-                                // Bars and X-Axis
-                                GeometryReader { geo in
-                                    HStack(alignment: .bottom, spacing: 16) {
-                                        ForEach(weekData) { day in
-                                            VStack (spacing: 4){
-                                                Spacer()
-                                                    .frame(height: 15)
-                                                // Bar
-                                                Rectangle()
-                                                    .fill(Color.blue)
-                                                    .frame(
-                                                        width: 20,
-                                                        height: CGFloat(day.taskDone) / CGFloat(5) * 140 )
-                                                
-                                                // X-axis label
-                                                Text(day.day)
-                                                    .font(.caption2)
-                                                    .frame(height: 14)
-                                            }
+                            }
+                            .frame(width: 20)
+                            
+                            // Bars and X-Axis
+                            GeometryReader { geo in
+                                HStack(alignment: .bottom, spacing: 16) {
+                                    ForEach(weekData) { day in
+                                        VStack (spacing: 4){
+                                            Spacer()
+                                                .frame(height: 15)
+                                            // Bar
+                                            Rectangle()
+                                                .fill(Color.blue)
+                                                .frame(
+                                                    width: 20,
+                                                    height: CGFloat(day.taskDone) / CGFloat(5) * 140 )
+                                            
+                                            // X-axis label
+                                            Text(day.day)
+                                                .font(.caption2)
+                                                .frame(height: 14)
                                         }
                                     }
-                                    .frame(width: geo.size.width, alignment: .center)
                                 }
-                                .frame(width: CGFloat(weekData.count) * 36)
+                                .frame(width: geo.size.width, alignment: .center)
                             }
+                            .frame(width: CGFloat(weekData.count) * 36)
                         }
-                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
                     
                     Spacer()
                         .frame(height: 20)
@@ -179,26 +179,26 @@ struct DashboardView: View {
                     }
                     Text("Try setting a goal for \(Int(averageTasks)) tasks per day.")
                         .italic()
-                                    
-                                    Divider()
-                                    Spacer()
-                                    
-                                    // Quick Actions
-                                    Text("Today’s Top 3").font(.headline)
-                                        VStack(alignment: .leading, spacing: 10) {
-                                            ForEach(todaysHabits, id: \.title) { habit in
-                                                Text(habit.title)
-                                                    .padding()
-                                                    .background(habit.isComplete ? Color.green.opacity(0.5) : Color.gray.opacity(0.5))
-                                                    .cornerRadius(8)
-                                            }
-                                        }
-                                    HStack {
-                                        Button("Add New Habit") { print("Add tapped") }
-                                            .buttonStyle(.borderedProminent)
-                                        Button("View Full Calendar") { print("Calendar tapped") }
-                                            .buttonStyle(.bordered)
-                                    }
+                    
+                    Divider()
+                    Spacer()
+                    
+                    // Quick Actions
+                    Text("Today’s Top 3").font(.headline)
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(todaysHabits, id: \.title) { habit in
+                            Text(habit.title)
+                                .padding()
+                                .background(habit.isComplete ? Color.green.opacity(0.5) : Color.gray.opacity(0.5))
+                                .cornerRadius(8)
+                        }
+                    }
+                    HStack {
+                        Button("Add New Habit") { print("Add tapped") }
+                            .buttonStyle(.borderedProminent)
+                        Button("View Full Calendar") { print("Calendar tapped") }
+                            .buttonStyle(.bordered)
+                    }
                 }
                 .navigationTitle("Dashboard")
             }
@@ -222,17 +222,20 @@ struct CalendarView: View {
     }
 }
 
-// Profile Tab
+
+// Profile Tab - Ria S
 struct ProfileView: View {
     @State private var user = UserProfile(
         name: "Random Subject",
         email: "random.user@gmail.com",
         phoneNumber: "+1 123 456 7890",
-        joinDate: "November 2025"
+        joinDate: "November 2025",
+        userName: "@random_sub",
+        bday: "1/1/2005"
     )
     
     @State private var notificationsEnabled = false
-    @State private var showEditProfile = false
+    @State private var showingEditProfile = false
     
     var body: some View {
         NavigationView {
@@ -240,10 +243,12 @@ struct ProfileView: View {
                 VStack {
                     Text("Profile")
                         .font(.largeTitle)
+                        .fontWeight(.bold)
                         .padding()
                     Spacer()
                 }
                 VStack(spacing: 15) {
+                    // Profile Picture
                     ZStack{
                         Circle()
                             .fill(LinearGradient (
@@ -258,22 +263,150 @@ struct ProfileView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                     }
+                    // Name and Join Date
+                    VStack(spacing: 5){
+                        Text(user.name)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                        Text("Joined: " + user.joinDate)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    
+                    
+                    // Personal Info Display
+                    VStack(spacing: 0){
+                        Text("Personal Information")
+                            .frame(maxWidth: 360, alignment: .leading)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Spacer()
+                        VStack(spacing: 0){
+                            ProfileInfoRow(icon: "person.fill", title: "Username", value: user.userName)
+                            ProfileInfoRow(icon: "envelope.fill", title: "Email", value: user.email)
+                            ProfileInfoRow(icon: "phone.fill", title: "Phone", value: user.phoneNumber)
+                            ProfileInfoRow(icon: "calendar", title: "Birthday", value: user.bday)
+                        }
+                        .background(Color.white)
+                        .cornerRadius(15)
+                        .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .toolbar{
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button("Edit Profile"){
+                        showingEditProfile = true
+                    }
+                    .foregroundColor(.yellow)
                 }
             }
         }
+        
+        .sheet(isPresented: $showingEditProfile) {
+            EditProfileView(user: $user)
+        }
+        
     }
-}
-
-struct UserProfile {
-    var name: String
-    var email: String
-    var phoneNumber: String
-    let joinDate: String
     
-    var initials: String {
-        let components = name.components(separatedBy: " ")
-        let firstInitial = components.first?.first?.uppercased() ?? ""
-        let lastInitial = components.count > 1 ? components.last?.first?.uppercased() ?? "" : ""
-        return firstInitial + lastInitial
+    
+    // Editing Profile Info
+    struct EditProfileView: View {
+        @Binding var user: UserProfile
+        @Environment(\.presentationMode) var presentationMode
+        
+        @State private var editedName: String = ""
+        @State private var editedEmail: String = ""
+        @State private var editedPhone: String = ""
+        @State private var editedBday: String = ""
+        
+        var body: some View {
+            NavigationView {
+                Form {
+                    Section(header: Text("Personal Information")) {
+                        TextField("Full Name", text: $editedName)
+                        TextField("Email", text: $editedEmail)
+                            .keyboardType(.emailAddress)
+                        TextField("Phone", text: $editedPhone)
+                            .keyboardType(.phonePad)
+                        TextField("Birthday", text: $editedBday)
+                    }
+                }
+                .navigationTitle("Edit Profile")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Save") {
+                            user.name = editedName
+                            user.email = editedEmail
+                            user.phoneNumber = editedPhone
+                            user.bday = editedBday
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        .foregroundColor(.yellow)
+                    }
+                }
+            }
+            .onAppear {
+                editedName = user.name
+                editedEmail = user.email
+                editedPhone = user.phoneNumber
+                editedBday = user.bday
+            }
+        }
     }
+    
+    // User Data
+    struct UserProfile {
+        var name: String
+        var email: String
+        var phoneNumber: String
+        let joinDate: String
+        var userName: String
+        var bday: String
+        
+        var initials: String {
+            let components = name.components(separatedBy: " ")
+            let firstInitial = components.first?.first?.uppercased() ?? ""
+            let lastInitial = components.count > 1 ? components.last?.first?.uppercased() ?? "" : ""
+            return firstInitial + lastInitial
+        }
+    }
+    
+    // Structure for a row of personal info
+    struct ProfileInfoRow: View {
+        let icon: String
+        let title: String
+        let value: String
+        
+        var body: some View {
+            HStack(spacing: 15) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundColor(.yellow)
+                    .frame(width: 20)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text(value)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                }
+                
+                Spacer()
+            }
+            .padding()
+        }
+    }
+    
 }

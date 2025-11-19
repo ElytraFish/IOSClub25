@@ -189,6 +189,7 @@ struct CalendarView: View {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Ria S!
 struct ProfileView: View {
     var body: some View {
@@ -201,6 +202,8 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
 =======
+=======
+>>>>>>> Stashed changes
 enum AppTheme: String, CaseIterable, Identifiable {
     case system
     case light
@@ -344,6 +347,16 @@ struct ProfileView: View {
                         }
                     }
                 }
+<<<<<<< Updated upstream
+            }
+            .navigationTitle("Profile")
+            .toolbar {
+                Button(isEditing ? "Done" : "Edit") {
+                    isEditing.toggle()
+                }
+            }
+>>>>>>> Stashed changes
+=======
             }
             .navigationTitle("Profile")
             .toolbar {

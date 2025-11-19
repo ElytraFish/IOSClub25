@@ -1,4 +1,5 @@
 import SwiftUI
+internal import Combine
 
 // Theme definitions
 enum Theme: String, CaseIterable {
@@ -51,7 +52,7 @@ enum Theme: String, CaseIterable {
     var iconColor: Color {
         switch self {
         case .light: return .blue
-        case .dark: return .white
+        case .dark: return .red
         case .ocean: return Color(red: 0.78, green: 0.72, blue: 0.71)
         case .sunset: return .pink
         }
@@ -61,7 +62,7 @@ enum Theme: String, CaseIterable {
     var profilePicColor1: Color {
         switch self {
         case .light: return .blue
-        case .dark: return .gray
+        case .dark: return .blue
         case .ocean: return .blue
         case .sunset: return .yellow
         }
@@ -71,7 +72,7 @@ enum Theme: String, CaseIterable {
     var profilePicColor2: Color {
         switch self {
         case .light: return .blue
-        case .dark: return .gray
+        case .dark: return .black
         case .ocean: return .mint
         case .sunset: return .pink
         }
@@ -91,7 +92,7 @@ enum Theme: String, CaseIterable {
     var editProfileColor: Color {
         switch self {
         case .light: return .black
-        case .dark: return .white
+        case .dark: return .blue
         case .ocean: return .blue
         case .sunset: return .yellow
         }
@@ -327,7 +328,7 @@ struct DashboardView: View {
             .foregroundColor(themeManager.currentTheme.textColor)
             .navigationTitle("Dashboard")
             .navigationBarTextColor(themeManager.currentTheme == .dark ? .white : .black)
-
+            
         }
     }
 }
@@ -336,23 +337,300 @@ struct DashboardView: View {
 struct CalendarView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @Binding var selectedTab: Int
+    var onDateSelected: (Date) -> Void = { _ in }
+    @State private var selectedDate = Date()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
-                Text("Calendar")
-                    .font(.largeTitle)
-                    .padding()
+                DatePicker(
+                    "",
+                    selection: $selectedDate,
+                    displayedComponents: [.date]
+                )
+                .datePickerStyle(.graphical)
+                .tint(themeManager.currentTheme.accentColor) // theme-aware accent
+                .colorScheme(themeManager.currentTheme == .dark ? .dark : .light)
+                .padding()
+                
+                Spacer()
+                
+                Button("Confirm Date") {
+                    onDateSelected(selectedDate)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(themeManager.currentTheme.accentColor)
+                .padding()
+                
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(themeManager.currentTheme.backgroundColor.edgesIgnoringSafeArea(.all))
-            .foregroundColor(themeManager.currentTheme.textColor)
+            .background(themeManager.currentTheme.backgroundColor) // theme-aware background
+            .foregroundColor(themeManager.currentTheme.textColor) // theme-aware text
             .navigationTitle("Calendar")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarTextColor(themeManager.currentTheme == .dark ? .white : .black)
-
         }
     }
+}
+
+
+
+
+// with help of a tutorial to implement a basic calendar feature
+
+struct ScheduleView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    @State private var selectedSessionDate: Date = Date.now
+    @State private var selectedSessionHour: Date = Date.now
+    
+    var onDateSelected: (Date) -> Void = { _ in }
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            Text("Schedule View")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(themeManager.currentTheme.textColor)
+                .textCase(.uppercase)
+            
+            CalendarView(selectedTab: .constant(2)) { mergedDate in
+                self.selectedSessionDate = mergedDate
+                onDateSelected(mergedDate)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+            HStack {
+                Spacer()
+                Button {
+                    let merged = merge(selectedSessionDate, selectedSessionHour)
+                    onDateSelected(merged)
+                } label: {
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(themeManager.currentTheme.accentColor)
+                        .padding()
+                        .background(
+                            Circle()
+                                .fill(themeManager.currentTheme.accentColor.opacity(0.1))
+                                .overlay(
+                                    Circle().stroke(themeManager.currentTheme.accentColor, lineWidth: 2)
+                                )
+                        )
+                }
+            }
+            .padding()
+        }
+        .background(themeManager.currentTheme.backgroundColor.edgesIgnoringSafeArea(.all))
+        .foregroundColor(themeManager.currentTheme.textColor)
+    }
+}
+
+
+
+
+func merge(_ date: Date, _ time: Date) -> Date {
+    
+    let calendar = Calendar.current
+    
+    
+    
+    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+    
+    let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+    
+    
+    
+    var merged = DateComponents()
+    
+    merged.year = dateComponents.year
+    
+    merged.month = dateComponents.month
+    
+    merged.day = dateComponents.day
+    
+    merged.hour = timeComponents.hour
+    
+    merged.minute = timeComponents.minute
+    
+    
+    
+    return calendar.date(from: merged) ?? date
+    
+}
+
+extension Date {
+    
+    static let firstDayOfWeek = Calendar.current.firstWeekday
+    
+    
+    static var capitalizedFirstLettersOfWeekdays: [String] {
+        
+        let calendar = Calendar.current
+        
+        // Adjusted for the different weekday starts
+        
+        var weekdays = calendar.shortWeekdaySymbols
+        
+        if firstDayOfWeek > 1 {
+            
+            for _ in 1..<firstDayOfWeek {
+                
+                if let first = weekdays.first {
+                    
+                    weekdays.append(first)
+                    
+                    weekdays.removeFirst()
+                    
+                }
+                
+            }
+            
+        }
+        
+        return weekdays.map { $0.capitalized }
+        
+    }
+    
+    
+    
+    var startOfMonth: Date {
+        
+        Calendar.current.dateInterval(of: .month, for: self)!.start
+        
+    }
+    
+    
+    
+    var endOfMonth: Date {
+        
+        let lastDay = Calendar.current.dateInterval(of: .month, for: self)!.end
+        
+        return Calendar.current.date(byAdding: .day, value: -1, to: lastDay)!
+        
+    }
+    
+    
+    
+    var numberOfDaysInMonth: Int {
+        
+        Calendar.current.component(.day, from: endOfMonth)
+        
+    }
+    
+    
+    
+    var firstWeekDayBeforeStart: Date {
+        
+        let startOfMonthWeekday = Calendar.current.component(.weekday, from: startOfMonth)
+        
+        var numberFromPreviousMonth = startOfMonthWeekday - Self.firstDayOfWeek
+        
+        if numberFromPreviousMonth < 0 {
+            
+            numberFromPreviousMonth += 7 // Adjust to a 0-6 range if negative
+            
+        }
+        
+        return Calendar.current.date(byAdding: .day, value: -numberFromPreviousMonth, to: startOfMonth)!
+        
+    }
+    
+    
+    
+    var calendarDisplayDays: [Date] {
+        
+        var days: [Date] = []
+        
+        // Start with days from the previous month to fill the grid
+        
+        let firstDisplayDay = firstWeekDayBeforeStart
+        
+        var day = firstDisplayDay
+        
+        while day < startOfMonth {
+            
+            days.append(day)
+            
+            day = Calendar.current.date(byAdding: .day, value: 1, to: day)!
+            
+        }
+        
+        // Add days of the current month
+        
+        for dayOffset in 0..<numberOfDaysInMonth {
+            
+            if let newDay = Calendar.current.date(byAdding: .day, value: dayOffset, to: startOfMonth) {
+                
+                days.append(newDay)
+                
+            }
+            
+        }
+        
+        return days
+        
+    }
+    
+    
+    
+    var monthInt: Int {
+        
+        Calendar.current.component(.month, from: self)
+        
+    }
+    
+    
+    
+    var startOfDay: Date {
+        
+        Calendar.current.startOfDay(for: self)
+        
+    }
+    
+    
+    
+    var hourInt: Int {
+        
+        Calendar.current.component(.hour, from: self)
+        
+    }
+    
+    
+    
+    var minuteInt: Int {
+        
+        Calendar.current.component(.minute, from: self)
+        
+    }
+    
+    
+    
+    var formattedDate: String {
+        
+        let formatter = ISO8601DateFormatter()
+        
+        formatter.timeZone = .current
+        
+        formatter.formatOptions = [.withFullDate]
+        
+        return formatter.string(from: self)
+        
+    }
+    
+    
+    
+    var formattedDateHourCombined: String {
+        
+        let formatter = ISO8601DateFormatter()
+        
+        formatter.timeZone = .current
+        
+        return formatter.string(from: self)
+        
+    }
+    
 }
 
 // MARK: - ProfileView
@@ -616,7 +894,7 @@ struct NavigationBarColor: ViewModifier {
         appearance.configureWithTransparentBackground()
         appearance.titleTextAttributes = [.foregroundColor: textColor]
         appearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-
+        
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
     }
